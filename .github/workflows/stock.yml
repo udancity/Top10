@@ -1,0 +1,29 @@
+name: Daily Stock Analysis
+
+on:
+  schedule:
+    # 台灣時間 10:00 (UTC 02:00) 和 13:00 (UTC 05:00)
+    - cron: '0 2,5 * * 1-5'
+  workflow_dispatch: # 允許手動觸發
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.9'
+
+      - name: Install dependencies
+        run: |
+          pip install yfinance pandas requests beautifulsoup4 openpyxl
+
+      - name: Run analysis
+        env:
+          LINE_CHANNEL_ACCESS_TOKEN: ${{ secrets.LINE_CHANNEL_ACCESS_TOKEN }}
+          LINE_USER_ID: ${{ secrets.LINE_USER_ID }}
+        run: main.py
