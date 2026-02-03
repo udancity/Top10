@@ -27,3 +27,9 @@ jobs:
           LINE_CHANNEL_ACCESS_TOKEN: ${{ secrets.LINE_CHANNEL_ACCESS_TOKEN }}
           LINE_USER_ID: ${{ secrets.LINE_USER_ID }}
         run: python stock_analysis.py  # 必須加上 python，且檔名要與你上傳的檔案一致
+
+      - name: Upload Report
+        uses: actions/upload-artifact@v4
+        with:
+          name: Stock-Report
+          path: "*.xlsx"  # 這裡會抓取所有產出的 Excel 檔案
