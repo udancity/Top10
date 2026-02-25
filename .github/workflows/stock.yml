@@ -31,27 +31,17 @@ jobs:
           LINE_USER_ID: ${{ secrets.LINE_USER_ID }}
         run: python stock_analysis.py
 
-      # 先存回倉庫，確保 data.json 出現在 main 分支
-      - name: Commit and Push JSON and HTML
+      - name: Commit and Push Data Only
         run: |
           git config --local user.email "github-actions[bot]@users.noreply.github.com"
           git config --local user.name "github-actions[bot]"
-          git add data.json index.html
-          git commit -m "自動更新數據: $(date +'%Y-%m-%d %H:%M')" || echo "沒有變動需要提交"
+          # 關鍵：只 git add data.json，不要加 index.html
+          git add data.json
+          git commit -m "自動更新數據 JSON: $(date +'%Y-%m-%d %H:%M')" || echo "無資料變動"
           git push
 
-      - name: Upload Report
+      - name: Upload Excel Artifact
         uses: actions/upload-artifact@v4
         with:
-          name: Stock-Report
-          path: |
-            *.xlsx
-            data.json
-            index.html
-
-      - name: Deploy to GitHub Pages
-        uses: peaceiris/actions-gh-pages@v3
-        with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: .
-          publish_branch: gh-pages
+          name: Stock-Excel-Report
+          path: "*.xlsx"
