@@ -29,17 +29,29 @@ jobs:
         env:
           LINE_CHANNEL_ACCESS_TOKEN: ${{ secrets.LINE_CHANNEL_ACCESS_TOKEN }}
           LINE_USER_ID: ${{ secrets.LINE_USER_ID }}
-        run: python stock_analysis.py  # 必須加上 python，且檔名要與你上傳的檔案一致
+        run: python stock_analysis.py
+
+      # 先存回倉庫，確保 data.json 出現在 main 分支
+      - name: Commit and Push JSON and HTML
+        run: |
+          git config --local user.email "github-actions[bot]@users.noreply.github.com"
+          git config --local user.name "github-actions[bot]"
+          git add data.json index.html
+          git commit -m "自動更新數據: $(date +'%Y-%m-%d %H:%M')" || echo "沒有變動需要提交"
+          git push
 
       - name: Upload Report
         uses: actions/upload-artifact@v4
         with:
           name: Stock-Report
-          path: "*.xlsx"  # 這裡會抓取所有產出的 Excel 檔案
+          path: |
+            *.xlsx
+            data.json
+            index.html
 
       - name: Deploy to GitHub Pages
         uses: peaceiris/actions-gh-pages@v3
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: . # 部署目前路徑下的 index.html
-          publish_branch: gh-pages # 這是 Pages 專用的分支
+          publish_dir: .
+          publish_branch: gh-pages
