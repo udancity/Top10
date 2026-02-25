@@ -6,6 +6,9 @@ on:
     - cron: '0 2,5 * * 1-5'
   workflow_dispatch: # 允許手動觸發
 
+permissions:
+  contents: write  # 賦予 Actions 寫入倉庫的權限
+
 jobs:
   build:
     runs-on: ubuntu-latest
