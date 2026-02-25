@@ -119,8 +119,10 @@ def generate_html(df_up, df_down):
     return full_html
 
 # 4. 主程式
+# ... (前面抓取資料與分析的函數保持不變) ...
+
 def main():
-    logger.info("🚀 啟動分析系統...")
+    logger.info("🚀 啟動數據分析系統...")
     up_raw = get_yahoo_rank_list("up")
     down_raw = get_yahoo_rank_list("down")
 
@@ -131,11 +133,7 @@ def main():
     df_down = pd.DataFrame(results_down)
 
     if not df_up.empty or not df_down.empty:
-        # 存 HTML
-        with open('index.html', 'w', encoding='utf-8') as f:
-            f.write(generate_html(df_up, df_down))
-        
-        # 存 JSON
+        # 1. 產出 JSON (給 Google Sheets 抓取)
         data_json = {
             "update_time": datetime.now().strftime('%Y-%m-%d %H:%M:%S'),
             "up_list": df_up.to_dict(orient='records'),
@@ -144,13 +142,17 @@ def main():
         with open('data.json', 'w', encoding='utf-8') as f:
             json.dump(data_json, f, ensure_ascii=False, indent=4)
 
-        # 存 Excel
+        # 2. 產出 Excel (供你自己備份存檔)
         with pd.ExcelWriter(f"Stock_Report_{datetime.now().strftime('%Y%m%d')}.xlsx") as writer:
             if not df_up.empty: df_up.to_excel(writer, sheet_name='漲幅', index=False)
             if not df_down.empty: df_down.to_excel(writer, sheet_name='跌幅', index=False)
 
+        # 3. LINE 推播
         send_line_push(df_up, df_down)
-        logger.info("✅ 任務完成")
+        
+        # --- 注意：原本 generate_html 的部分已經移除，以免覆蓋 Vercel 的網頁 ---
+        
+        logger.info("✅ 數據更新完成，JSON 與 Excel 已產出")
 
 if __name__ == "__main__":
     main()
