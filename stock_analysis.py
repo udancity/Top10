@@ -129,68 +129,130 @@ def generate_html(df_up, df_down):
     now_str = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
     
     style = """
-    <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { font-family: 'Microsoft JhengHei', 'Segoe UI', sans-serif; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); min-height: 100vh; padding: 20px; }
-        .container { max-width: 1000px; margin: auto; background: white; border-radius: 12px; box-shadow: 0 20px 60px rgba(0,0,0,0.3); padding: 30px; }
-        h1 { color: #2c3e50; text-align: center; margin-bottom: 10px; }
-        .timestamp { text-align: center; color: #7f8c8d; font-size: 0.9em; margin-bottom: 30px; }
-        .section-title { border-left: 6px solid #e74c3c; padding-left: 15px; margin: 30px 0 15px; font-size: 1.5em; }
-        .section-title.up { border-color: #27ae60; color: #27ae60; }
-        table { border-collapse: collapse; width: 100%; box-shadow: 0 1px 3px rgba(0,0,0,0.2); margin-bottom: 20px; }
-        th { background-color: #2980b9; color: white; padding: 12px; text-align: left; }
-        td { padding: 12px; border-bottom: 1px solid #ddd; }
-        tr:hover { background-color: #f5f5f5; }
-        .no-data { color: #95a5a6; font-style: italic; }
-        .positive { color: #27ae60; font-weight: bold; }
-        .negative { color: #e74c3c; font-weight: bold; }
-        .footer { text-align: center; margin-top: 30px; padding-top: 20px; border-top: 1px solid #ddd; color: #95a5a6; font-size: 0.9em; }
+   <style>
+        @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700&display=swap');
+        
+        body { 
+            font-family: 'Noto Sans TC', sans-serif; 
+            background-color: #ffffff; /* 純白底色 */
+            color: #5d534a; 
+            margin: 0; 
+            padding: 40px 20px;
+        }
+        .container { max-width: 1100px; margin: auto; }
+        
+        h1 { 
+            font-size: 28px; 
+            color: #8c7851; 
+            text-align: center; 
+            margin-bottom: 5px; 
+            letter-spacing: 2px;
+        }
+        .timestamp { 
+            text-align: center; 
+            color: #b5a18a; 
+            font-size: 14px; 
+            margin-bottom: 40px; 
+        }
+        
+        /* 雙欄佈局設定 */
+        .flex-container { 
+            display: flex; 
+            gap: 30px; 
+            flex-wrap: wrap; 
+        }
+        .column { 
+            flex: 1; 
+            min-width: 320px; 
+            background: #faf8f5; /* 輕微灰白色卡片 */
+            padding: 25px; 
+            border-radius: 25px; 
+            box-shadow: 0 10px 25px rgba(0,0,0,0.03);
+            border: 1px solid #f0ede9;
+        }
+        
+        h2 { 
+            font-size: 20px; 
+            margin-top: 0; 
+            padding-bottom: 15px; 
+            border-bottom: 2px solid #e8e4de;
+            display: flex;
+            align-items: center;
+        }
+        .up-title { color: #88a47c; } /* 森林綠 */
+        .down-title { color: #c88a8a; } /* 晚霞紅 */
+
+        table { 
+            border-collapse: collapse; 
+            width: 100%; 
+            margin-top: 10px;
+            font-size: 15px;
+        }
+        th { 
+            text-align: left; 
+            color: #b5a18a; 
+            font-weight: 500; 
+            padding: 12px 8px;
+            border-bottom: 1px solid #eee;
+        }
+        td { 
+            padding: 15px 8px; 
+            border-bottom: 1px dashed #e8e4de; 
+        }
+        tr:last-child td { border-bottom: none; }
+        
+        .no-data { color: #ccc; font-style: italic; padding: 20px 0; }
+        
+        /* 手機版適應 */
+        @media (max-width: 768px) {
+            .flex-container { flex-direction: column; }
+        }
     </style>
     """
     
     # 處理漲幅數據
     up_html = ""
-    if not df_up.empty:
-        up_html = df_up.to_html(index=False, classes='stock-table')
-        # 給漲幅加上綠色樣式
-        up_html = up_html.replace('<td>', '<td class="positive">', 1)
-    else:
-        up_html = '<p class="no-data">今日無顯著數據</p>'
-    
-    # 處理跌幅數據
-    down_html = ""
-    if not df_down.empty:
-        down_html = df_down.to_html(index=False, classes='stock-table')
-    else:
-        down_html = '<p class="no-data">今日無顯著數據</p>'
-    
-    html = f"""<!DOCTYPE html>
-<html lang="zh-TW">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>台股雙向掃描報告</title>
-    {style}
-</head>
-<body>
-    <div class="container">
-        <h1>📊 台股雙向掃描報告</h1>
-        <div class="timestamp">更新於：{now_str}</div>
-        
-        <h2 class="section-title up">📈 漲幅 Top 10</h2>
-        {up_html}
-        
-        <h2 class="section-title">📉 跌幅 Top 10</h2>
-        {down_html}
-        
-        <div class="footer">
-            <p>自動化股票分析系統 | GitHub Pages 發布</p>
+ <!DOCTYPE html>
+    <html lang="zh-TW">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        {style}
+    </head>
+    <body>
+        <div class="container">
+            <h1>🌿 每日漲跌排名</h1>
+            <div class="timestamp">數據更新於：{now_str}</div>
+            
+            <div class="flex-container">
+                <div class="column">
+                    <h2 class="up-title">▲ 強勢</h2>
+                    {df_up.to_html(index=False, classes='stock-table') if not df_up.empty else '<p class="no-data">今日暫無強勢訊號</p>'}
+                </div>
+                
+                <div class="column">
+                    <h2 class="down-title">▼ 弱勢</h2>
+                    {df_down.to_html(index=False, classes='stock-table') if not df_down.empty else '<p class="no-data">今日暫無弱勢訊號</p>'}
+                </div>
+            </div>
         </div>
-    </div>
-</body>
-</html>
+    </body>
+    </html>
 """
     return html
+
+import json
+
+# 將 DataFrame 轉成字典格式
+data = {
+    "update_time": datetime.now().strftime('%Y-%m-%d %H:%M:%S'),
+    "up_list": df_up.to_dict(orient='records'),
+    "down_list": df_down.to_dict(orient='records')
+}
+
+# 儲存為 data.json
+with open('data.json', 'w', encoding='utf-8') as f:
+    json.dump(data, f, ensure_ascii=False, indent=4)
 
 def main():
     print("🚀 啟動分析系統...")
