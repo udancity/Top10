@@ -211,7 +211,7 @@ def generate_html(df_up, df_down):
     """
     
     # 處理漲幅數據
-    up_html = ""
+    up_html = """
  <!DOCTYPE html>
     <html lang="zh-TW">
     <head>
@@ -219,7 +219,7 @@ def generate_html(df_up, df_down):
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         {style}
     </head>
-    <body>
+        <body>
         <div class="container">
             <h1>🌿 每日漲跌排名</h1>
             <div class="timestamp">數據更新於：{now_str}</div>
@@ -238,7 +238,7 @@ def generate_html(df_up, df_down):
         </div>
     </body>
     </html>
-"""
+    """
     return html
 
 import json
