@@ -33,3 +33,10 @@ jobs:
         with:
           name: Stock-Report
           path: "*.xlsx"  # 這裡會抓取所有產出的 Excel 檔案
+
+      - name: Deploy to GitHub Pages
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: . # 部署目前路徑下的 index.html
+          publish_branch: gh-pages # 這是 Pages 專用的分支
