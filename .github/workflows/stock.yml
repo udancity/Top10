@@ -2,8 +2,8 @@ name: Daily Stock Analysis
 
 on:
   schedule:
-    # 台灣時間 09:00 (UTC 02:00) 和 13:00 (UTC 05:00)
-    - cron: '0 1,5 * * 1-5'
+    # 台灣時間 09:00 (UTC 00:00) 和 13:00 (UTC 05:00) 約延遲兩小時
+    - cron: '0 0,5 * * 1-5'
   workflow_dispatch: # 允許手動觸發
 
 permissions:
